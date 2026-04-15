@@ -115,9 +115,19 @@ namespace Program
                 selected.DeductStock(quantity);
                 Console.WriteLine("Added to cart");
 
-                //Asking the users if they want to continue
-                Console.Write("Do you want to Continue using the system? (Y/N): ");
-                answer = Console.ReadLine();
+                 //Asking the users if they want to continue
+                Console.Write("Do you want to continue using the system? (Y/N): ");
+                answer = Console.ReadLine().ToUpper();
+
+                if (answer == "Y")
+                {
+                    continue;
+                }
+                else if (answer == "N")
+                {
+                    break;
+                }
+
 
             } while (true);
 
