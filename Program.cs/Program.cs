@@ -131,8 +131,17 @@ namespace Program
 
             } while (true);
 
+            //This Computes Total price
+            double grand_total = 0;
 
+            for (int i = 0; i < cart_count; i++)
+            {
+                double subtotal = cart[i].GetItemTotal(cart_quantity[i]);
+                grand_total += subtotal;
 
+                Console.WriteLine($"{cart[i].Name} x{cart_quantity[i]} = {subtotal}php");
+            }
+            
             Console.ReadKey();
         }
 
