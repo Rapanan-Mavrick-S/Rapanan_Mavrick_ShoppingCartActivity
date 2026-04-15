@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace Program
         {
 
             Console.WriteLine("-----------------------");
-            Console.WriteLine(" Shopping Cart System");
+            Console.WriteLine("|Shopping Cart System |");
             Console.WriteLine("-----------------------");
 
 
@@ -31,6 +31,7 @@ namespace Program
             {
                 i.DisplayProduct();
             }
+            Console.WriteLine("------------------------");
 
             //Cart
             Product[] cart = new Product[3];
@@ -38,6 +39,7 @@ namespace Program
             int cart_count = 0;
 
             String answer;
+            bool outer = true;
 
             do
             {
@@ -73,7 +75,7 @@ namespace Program
 
                 if (selected.RemainingStock == 0)
                 {
-                    Console.WriteLine("Out of Stock");
+                    Console.WriteLine("That product is out of stock");
                     continue;
                 }
 
@@ -103,7 +105,7 @@ namespace Program
                     if (cart_count >= cart.Length)
                     {
                         Console.WriteLine("Cart is Full");
-                        continue;
+                        break;
                     }
 
                     cart[cart_count] = selected;
@@ -113,26 +115,39 @@ namespace Program
                 }
 
                 selected.DeductStock(quantity);
-                Console.WriteLine("Added to cart");
+                Console.WriteLine($"{selected.Name} x{quantity} was added to cart");
 
-                 //Asking the users if they want to continue
-                Console.Write("Do you want to continue using the system? (Y/N): ");
-                answer = Console.ReadLine().ToUpper();
-
-                if (answer == "Y")
+                //Asking the users if they want to continue
+                while(true)
                 {
-                    continue;
-                }
-                else if (answer == "N")
-                {
-                    break;
+                    Console.Write("Do you want to add more product in the cart (Y/N)?: ");
+                    answer = Console.ReadLine().ToUpper();
+
+                    if (answer == "Y")
+                    {
+                        break;
+                    }
+                    else if (answer == "N")
+                    {
+                        outer = false;
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Input");
+                        continue;
+                    }
                 }
 
 
-            } while (true);
+            } while (outer);
 
             //This Computes Total price
             double grand_total = 0;
+
+            Console.WriteLine("------------------------");
+            Console.WriteLine("|          Total        |");
+            Console.WriteLine("------------------------");
 
             for (int i = 0; i < cart_count; i++)
             {
@@ -141,7 +156,55 @@ namespace Program
 
                 Console.WriteLine($"{cart[i].Name} x{cart_quantity[i]} = {subtotal}php");
             }
-            
+
+            Console.WriteLine("------------------------");
+
+            //Discount
+            double discount = 0;
+
+            if (grand_total >= 5000)
+            {
+                discount = grand_total * 0.10;
+            }
+
+            double finaltotal = grand_total - discount;
+
+            //Display Receipt
+            Console.WriteLine("------------------------");
+            Console.WriteLine("|         Receipt       |");
+            Console.WriteLine("------------------------");
+            Console.WriteLine($"Grand total:{grand_total} php");
+            Console.WriteLine($"Discount: {discount} php");
+            Console.WriteLine($"Final Total: {finaltotal} php");
+            Console.WriteLine("------------------------");
+
+            //Updated Data
+            while (true)
+            {
+                Console.Write("Would you like to see the updated data(Y/N): ");
+                answer = Console.ReadLine().ToUpper();
+
+                if (answer == "Y")
+                {
+                    Console.WriteLine("------------------------");
+                    Console.WriteLine("|     Updated Stock     |");
+                    Console.WriteLine("------------------------");
+                    foreach (Product u in products)
+                    {
+                        u.DisplayProduct();
+                    }
+                    Console.WriteLine("------------------------");
+                }
+                else if (answer == "N")
+                {
+                    Console.WriteLine("Thank you for Using the System");
+                    break;
+                }
+
+                break;
+            }
+
+
             Console.ReadKey();
         }
 
