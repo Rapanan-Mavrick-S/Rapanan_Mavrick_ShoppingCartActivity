@@ -118,7 +118,7 @@ namespace Program
                 Console.WriteLine($"{selected.Name} x{quantity} was added to cart");
 
                 //Asking the users if they want to continue
-                while(true)
+                while (true)
                 {
                     Console.Write("Do you want to add more product in the cart (Y/N)?: ");
                     answer = Console.ReadLine().ToUpper();
@@ -141,6 +141,40 @@ namespace Program
 
 
             } while (outer);
+
+            while (true)
+            {
+                int choice2;
+
+                Console.WriteLine("\n-----------------------");
+                Console.WriteLine("|      Cart Menu      |");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("1. View Cart");
+                Console.WriteLine("2. Remove an item from cart");
+                Console.WriteLine("3. Update item quantity");
+                Console.WriteLine("4. Clear Cart");
+                Console.WriteLine("5. Chckout");
+
+                Console.Write("\nEnter Your choice: ");
+                choice2 = Convert.ToInt32(Console.ReadLine());
+
+                switch (choice2)
+                {
+                    case 1:
+                        Console.WriteLine("\nYour Cart: ");
+                        for (int i = 0; i < cart_count; i++)
+                        {
+                            Console.WriteLine($"Item {i + 1}: {cart[i].Name} x{cart_quantity[i]}");
+                        }
+                        break;
+                    case 2:
+
+
+                    default:
+                        Console.WriteLine("Invalid choice");
+                        break;
+                }
+            }
 
             //This Computes Total price
             double grand_total = 0;
@@ -205,35 +239,9 @@ namespace Program
             }
 
 
+
             Console.ReadKey();
         }
-
     }
-    class Product
-    {
-        public int ID;
-        public String Name;
-        public double price;
-        public int RemainingStock;
 
-        public void DisplayProduct()
-        {
-            Console.WriteLine($"|{ID}| {Name} - {price} php (Stock: {RemainingStock})");
-        }
-
-        public double GetItemTotal(int quantity)
-        {
-            return price * quantity;
-        }
-
-        public bool HasEnoughStock(int quantity)
-        {
-            return quantity <= RemainingStock;
-        }
-
-        public void DeductStock(int quantity)
-        {
-            RemainingStock -= quantity;
-        }
-    }
 }
