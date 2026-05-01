@@ -126,7 +126,8 @@ namespace Program
                     if (cart_count >= cart.Length)
                     {
                         Console.WriteLine("Cart is Full");
-                        continue;
+                        goto cartfull;
+                        break;
                     }
 
                     cart[cart_count] = selected;
@@ -139,6 +140,7 @@ namespace Program
                 Console.WriteLine($"{selected.Name} x{quantity} was added to cart");
 
                 //Asking the users if they want to continue
+            cartfull:
                 while (true)
                 {
                     Console.Write("Add Item (Y/N)?: ");
@@ -333,8 +335,8 @@ namespace Program
 
                                 if (payment >= finaltotal)
                                 {
-                                    Console.WriteLine($"\nFinal Total: php{finaltotal}");
-                                    Console.WriteLine($"Payment: php{payment}");
+                                    Console.WriteLine($"\nFinal Total: php{finaltotal:F2}");
+                                    Console.WriteLine($"Payment: php{payment:F2}");
                                     Console.WriteLine($"Change: php{payment - finaltotal:F2}");
 
                                     string receiptNo = receiptCounter.ToString("D4");
