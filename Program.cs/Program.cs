@@ -228,14 +228,19 @@ namespace Program
                             cart[removeItem].RemainingStock += cart_quantity[removeItem];
 
                             //removes the item
-                            for (int i = removeItem; i < cart_count; i++)
+                            for (int i = removeItem; i < cart_count - 1; i++)
                             {
                                 cart[i] = cart[i + 1];
+                                cart_quantity[i] = cart_quantity[i + 1];
                             }
+
+
+                            cart[cart_count - 1] = null;
+                            cart_quantity[cart_count - 1] = 0;
 
                             cart_count--;
 
-                            Console.WriteLine("Item succesfuly removed!");
+                            Console.WriteLine("Item successfully removed!");
                             break;
 
                         case 4:
@@ -257,23 +262,27 @@ namespace Program
                                 break;
                             }
 
-                            Console.Write("Enter New Quantity: ");
-                            int updatequantity = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("How many do you want to add?: ");
+                            int addQuantity = Convert.ToInt32(Console.ReadLine());
 
-                            if (!cart[updateitem].HasEnoughStock(updatequantity))
+                            if (addQuantity <= 0)
+                            {
+                                Console.WriteLine("Enter a number greater than 0");
+                                break;
+                            }
+
+                            Product item = cart[updateitem];
+
+                            if (!item.HasEnoughStock(addQuantity))
                             {
                                 Console.WriteLine("Not enough stock!");
                                 break;
                             }
 
-                            if (updatequantity < 0)
-                            {
-                                Console.WriteLine("Quantity must be at least 1!");
-                                break;
-                            }
+                            item.DeductStock(addQuantity);
+                            cart_quantity[updateitem] += addQuantity;
 
-                            cart_quantity[updateitem] = updatequantity;
-                            Console.WriteLine("Quantity is updated successfully!");
+                            Console.WriteLine("Quantity updated successfully!");
                             break;
 
                         case 5:
@@ -440,27 +449,59 @@ namespace Program
                             Console.WriteLine("Categories:");
                             Console.WriteLine("- Fruits");
                             Console.WriteLine("- Vegetables");
-                            Console.WriteLine("- Tools:");
+                            Console.WriteLine("- Tools");
                             Console.Write("Enter category to search: ");
-                            string searchCategory = Console.ReadLine().ToUpper() ?? "";
+                            string searchCategory = Console.ReadLine() ?? "";
+
+                            bool foundCategory = false;
+
+                            // First, check if the category exists
+                            foreach (Product p in products)
+                            {
+                                if (p.Category.ToLower() == searchCategory.ToLower())
+                                {
+                                    foundCategory = true;
+                                    break;
+                                }
+                            }
+
+                            if (!foundCategory)
+                            {
+                                Console.WriteLine("Category not found.");
+                                break;
+                            }
+
+                            // Show all products in that category
+                            Console.WriteLine($"\nProducts in '{searchCategory}':");
+                            foreach (Product p in products)
+                            {
+                                if (p.Category.ToLower() == searchCategory.ToLower())
+                                {
+                                    Console.WriteLine($"- {p.Name}");
+                                }
+                            }
+
+                            // Enter product name
+                            Console.Write("\nEnter product name to search: ");
+                            string searchName = Console.ReadLine() ?? "";
 
                             bool foundItem = false;
 
-                            Console.WriteLine("\nProducts found:");
-
+                            Console.WriteLine("\nProduct Details:");
                             foreach (Product p in products)
                             {
-                                // compare category
-                                if (p.Category.ToLower() == searchCategory.ToLower())
+                                if (p.Category.ToLower() == searchCategory.ToLower() &&
+                                    p.Name.ToLower() == searchName.ToLower())
                                 {
-                                    Console.WriteLine($"{p.Name} - x{p.RemainingStock} Stock left");
+                                    p.DisplayProduct();
                                     foundItem = true;
+                                    break;
                                 }
                             }
 
                             if (!foundItem)
                             {
-                                Console.WriteLine("No products found in that category.");
+                                Console.WriteLine($"No product named '{searchName}' found in {searchCategory}.");
                             }
 
                             break;
