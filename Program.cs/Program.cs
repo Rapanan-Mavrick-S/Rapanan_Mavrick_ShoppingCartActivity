@@ -13,25 +13,17 @@ namespace Program
         static void Main(string[] args)
         {
 
-            Console.WriteLine("-----------------------");
-            Console.WriteLine("|Shopping Cart System |");
-            Console.WriteLine("-----------------------");
-
 
             //Store Display Menu
             Product[] products = new Product[5];
 
-            products[0] = new Product { ID = 1, Name = "Apple", price = 10, RemainingStock = 15 };
-            products[1] = new Product { ID = 2, Name = "Banana", price = 12, RemainingStock = 10 };
-            products[2] = new Product { ID = 3, Name = "Orange", price = 13.25, RemainingStock = 12 };
-            products[3] = new Product { ID = 4, Name = "Onions", price = 7, RemainingStock = 15 };
-            products[4] = new Product { ID = 5, Name = "Golden Shovel", price = 5000, RemainingStock = 3 };
+            products[0] = new Product { ID = 1, Name = "Apple", price = 10, RemainingStock = 15, Category = "Fruit" };
+            products[1] = new Product { ID = 2, Name = "Banana", price = 12, RemainingStock = 10, Category = "Fruit" };
+            products[2] = new Product { ID = 3, Name = "Orange", price = 13.25, RemainingStock = 12, Category = "Fruit" };
+            products[3] = new Product { ID = 4, Name = "Onions", price = 7, RemainingStock = 15, Category = "Vegtable" };
+            products[4] = new Product { ID = 5, Name = "Golden Shovel", price = 5000, RemainingStock = 10, Category = "Tools" };
 
-            foreach (Product i in products)
-            {
-                i.DisplayProduct();
-            }
-            Console.WriteLine("------------------------");
+
 
             //Cart
             Product[] cart = new Product[3];
@@ -40,6 +32,12 @@ namespace Program
 
             String answer;
             bool outer = true;
+            double grand_total = 0;
+            double finaltotal = 0;
+            double discount = 0;
+            double payment;
+            bool Checkout = true;
+            bool lowStock = false;
 
             do
             {
@@ -48,6 +46,14 @@ namespace Program
                 int choice;
                 int quantity;
 
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("|Shopping Cart System |");
+                Console.WriteLine("-----------------------");
+                foreach (Product i in products)
+                {
+                    i.DisplayProduct();
+                }
+                Console.WriteLine("------------------------");
                 Console.Write("Enter product number: ");
                 if (!int.TryParse(Console.ReadLine(), out choice))
                 {
@@ -99,13 +105,13 @@ namespace Program
                     }
                 }
 
-                //Add products to the cart
+                //Add products to the cart and checks if the cart is full
                 if (!found)
                 {
                     if (cart_count >= cart.Length)
                     {
                         Console.WriteLine("Cart is Full");
-                        break;
+                        continue;
                     }
 
                     cart[cart_count] = selected;
@@ -120,16 +126,17 @@ namespace Program
                 //Asking the users if they want to continue
                 while (true)
                 {
-                    Console.Write("Do you want to add more product in the cart (Y/N)?: ");
+                    Console.Write("Add Item (Y/N)?: ");
                     answer = Console.ReadLine().ToUpper();
 
                     if (answer == "Y")
                     {
+                        Checkout = false;
                         break;
                     }
                     else if (answer == "N")
                     {
-                        outer = false;
+                        Checkout = true;
                         break;
                     }
                     else
@@ -139,229 +146,220 @@ namespace Program
                     }
                 }
 
+                while (Checkout)
+                {
+                    int choice2;
+
+                    Console.WriteLine("\n-----------------------");
+                    Console.WriteLine("|      Cart Menu      |");
+                    Console.WriteLine("-----------------------");
+                    Console.WriteLine("1. Add item");
+                    Console.WriteLine("2. View Cart");
+                    Console.WriteLine("3. Remove an item from cart");
+                    Console.WriteLine("4. Update item quantity");
+                    Console.WriteLine("5. Clear Cart");
+                    Console.WriteLine("6. Checkout");
+
+                    Console.Write("\nEnter Your choice: ");
+                    choice2 = Convert.ToInt32(Console.ReadLine());
+
+                    switch (choice2)
+                    {
+                        case 1:
+                            Checkout = false;
+                            break;
+
+                        case 2:
+
+                            //check if you cart is empty
+                            if (cart_count == 0)
+                            {
+                                Console.WriteLine("Your Cart is Empty!");
+                                break;
+                            }
+
+                            //Shows your cart
+                            Console.WriteLine("\nYour Cart: ");
+                            for (int i = 0; i < cart_count; i++)
+                            {
+                                Console.WriteLine($"Item {i + 1}: {cart[i].Name} x{cart_quantity[i]}");
+                            }
+                            break;
+
+                        case 3:
+
+                            //check if you cart is empty
+                            if (cart_count == 0)
+                            {
+                                Console.WriteLine("Your Cart is Empty!");
+                                break;
+                            }
+
+                            Console.Write("Which item to remove: ");
+
+                            int removeItem = Convert.ToInt32(Console.ReadLine()) - 1;
+                            if (removeItem < 0 || removeItem >= cart_count)
+                            {
+                                Console.WriteLine("Invalid Item!");
+                                break;
+                            }
+                            
+                            //restock the item
+                            cart[removeItem].RemainingStock += cart_quantity[removeItem];
+
+                            //removes the item
+                            for (int i = removeItem; i < cart_count; i++)
+                            {
+                                cart[i] = cart[i + 1];
+                            }
+
+                            cart_count--;
+
+                            Console.WriteLine("Item succesfuly removed!");
+                            break;
+
+                        case 4:
+
+                            //check if you cart is empty
+                            if (cart_count == 0)
+                            {
+                                Console.WriteLine("Your Cart is Empty!");
+                                break;
+                            }
+
+                            Console.Write("Select item to update: ");
+                            int updateitem = Convert.ToInt32(Console.ReadLine()) - 1;
+
+                            //checks if the item is in the cart
+                            if (updateitem < 0 || updateitem >= cart_count)
+                            {
+                                Console.WriteLine("Invalid item");
+                                break;
+                            }
+
+                            Console.Write("Enter New Quantity: ");
+                            int updatequantity = Convert.ToInt32(Console.ReadLine());
+
+                            if (!cart[updateitem].HasEnoughStock(updatequantity))
+                            {
+                                Console.WriteLine("Not enough stock!");
+                                break;
+                            }
+
+                            if (updatequantity < 0)
+                            {
+                                Console.WriteLine("Quantity must be at least 1!");
+                                break;
+                            }
+
+                            cart_quantity[updateitem] = updatequantity;
+                            Console.WriteLine("Quantity is updated successfully!");
+                            break;
+
+                        case 5:
+
+                            //check if you cart is empty
+                            if (cart_count == 0)
+                            {
+                                Console.WriteLine("Your Cart is Empty!");
+                                break;
+                            }
+
+                            //restock the item before clearing
+                            for (int i = 0; i < cart_count; i++)
+                            {
+                                cart[i].RemainingStock += cart_quantity[i];
+                            }
+
+                            cart_count = 0;
+                            Console.WriteLine("\nCart is Cleared");
+                            break;
+
+                        case 6:
+
+                            //check if you cart is empty
+                            if (cart_count == 0)
+                            {
+                                Console.WriteLine("Your Cart is Empty!");
+                                break;
+                            }
+
+                            //Computes grand total
+                            for (int i = 0; i < cart_count; i++)
+                            {
+                                double subtotal = cart[i].GetItemTotal(cart_quantity[i]);
+                                grand_total += subtotal;
+                            }
+
+
+                            //Discount
+
+                            if (grand_total >= 5000)
+                            {
+                                discount = grand_total * 0.10;
+                            }
+
+                            finaltotal = grand_total - discount;
+
+                            Console.WriteLine($"\nFinal Total = php {finaltotal}");
+
+                            while (true)
+                            {
+
+                                Console.Write("Enter payment: php ");
+                                if (!double.TryParse(Console.ReadLine(), out payment) || payment <= -1)
+                                {
+                                    Console.WriteLine("Invalid Amount");
+                                    continue;
+                                }
+
+                                if (payment >= finaltotal)
+                                {
+                                    Console.WriteLine($"\nFinal Total: php{finaltotal}");
+                                    Console.WriteLine($"Payment: php{payment}");
+                                    Console.WriteLine($"Change: php{payment - finaltotal:F2}");
+
+                                    foreach (Product p in products)
+                                    {
+                                        if (p.RemainingStock <= 5)
+                                        {
+                                            lowStock = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (lowStock)
+                                    {
+                                        Console.WriteLine("\nLOW STOCK ALERT:");
+
+                                        foreach (Product p in products)
+                                        {
+                                            if (p.RemainingStock <= 5)
+                                            {
+                                                Console.WriteLine($"{p.Name} has only {p.RemainingStock} left.");
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Insufficient payment");
+                                    continue;
+                                }
+
+                            }
+
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid choice");
+                            break;
+                    }
+                }
 
             } while (outer);
-
-            double grand_total = 0;
-            double finaltotal = 0;
-            double discount = 0;
-            double payment;
-            bool Checkout = true;
-
-            while (Checkout)
-            {
-                int choice2;
-
-                Console.WriteLine("\n-----------------------");
-                Console.WriteLine("|      Cart Menu      |");
-                Console.WriteLine("-----------------------");
-                Console.WriteLine("1. View Cart");
-                Console.WriteLine("2. Remove an item from cart");
-                Console.WriteLine("3. Update item quantity");
-                Console.WriteLine("4. Clear Cart");
-                Console.WriteLine("5. Checkout");
-
-                Console.Write("\nEnter Your choice: ");
-                choice2 = Convert.ToInt32(Console.ReadLine());
-
-                switch (choice2)
-                {
-
-                    case 1:
-
-                        //check if you cart is empty
-                        if (cart_count == 0)
-                        {
-                            Console.WriteLine("Your Cart is Empty!");
-                            break;
-                        }
-
-                        //Shows your cart
-                        Console.WriteLine("\nYour Cart: ");
-                        for (int i = 0; i < cart_count; i++)
-                        {
-                            Console.WriteLine($"Item {i + 1}: {cart[i].Name} x{cart_quantity[i]}");
-                        }
-                        break;
-
-                    case 2:
-
-                        //check if you cart is empty
-                        if (cart_count == 0)
-                        {
-                            Console.WriteLine("Your Cart is Empty!");
-                            break;
-                        }
-
-                        //remove item in your cart
-                        Console.Write("Which item to remove: ");
-
-                        int removeItem = Convert.ToInt32(Console.ReadLine()) - 1;
-                        if (removeItem < 0 || removeItem >= cart_count)
-                        {
-                            Console.WriteLine("Invalid Item!");
-                            break;
-                        }
-
-                        for (int i = removeItem; i < cart_count; i++)
-                        {
-                            cart[i] = cart[i + 1];
-                        }
-
-                        cart_count--;
-
-                        Console.WriteLine("Item succesfuly removed!");
-                        break;
-
-                    case 3:
-
-                        //check if you cart is empty
-                        if (cart_count == 0)
-                        {
-                            Console.WriteLine("Your Cart is Empty!");
-                            break;
-                        }
-
-                        Console.Write("Select item to update: ");
-                        int updateitem = Convert.ToInt32(Console.ReadLine()) - 1;
-
-                        //checks if the item is in the cart
-                        if (updateitem < 0 || updateitem >= cart_count)
-                        {
-                            Console.WriteLine("Invalid item");
-                            break;
-                        }
-
-                        Console.Write("Enter New Quantity: ");
-                        int updatequantity = Convert.ToInt32(Console.ReadLine());
-
-                        if (!cart[updateitem].HasEnoughStock(updatequantity))
-                        {
-                            Console.WriteLine("Not enough stock!");
-                            break;
-                        }
-
-                        if (updatequantity < 0)
-                        {
-                            Console.WriteLine("Quantity must be at leat 1!");
-                                break;
-                        }
-
-                        cart_quantity[updateitem] = updatequantity;
-                        Console.WriteLine("Quantity is updated successfully!");
-                        break;
-
-                    case 4:
-
-                        //check if you cart is empty
-                        if (cart_count == 0)
-                        {
-                            Console.WriteLine("Your Cart is Empty!");
-                            break;
-                        }
-
-                        cart_count = 0;
-                        Console.WriteLine("\nCart is Cleared");
-                        break;
-
-                    case 5:
-
-                        //check if you cart is empty
-                        if (cart_count == 0)
-                        {
-                            Console.WriteLine("Your Cart is Empty!");
-                            break;
-                        }
-
-                        //Computes grand total
-                        for (int i = 0; i < cart_count; i++)
-                        {
-                            double subtotal = cart[i].GetItemTotal(cart_quantity[i]);
-                            grand_total += subtotal;
-                        }
-
-
-                        //Discount
-
-                        if (grand_total >= 5000)
-                        {
-                            discount = grand_total * 0.10;
-                        }
-
-                        finaltotal = grand_total - discount;
-
-                        Console.WriteLine($"\nFinal Total = php{finaltotal}");
-
-                        while (true)
-                        {
-                            Console.Write("Enter payment: php");
-                            if (!double.TryParse(Console.ReadLine(), out payment) || payment <= -1)
-                            {
-                                Console.WriteLine("Invalid Amount");
-                                continue;
-                            }
-
-                            if (payment >= finaltotal)
-                            {
-                                Console.WriteLine($"Final Total: php{finaltotal}");
-                                Console.WriteLine($"Payment: php{payment}");
-                                Console.WriteLine($"Change: php{payment - finaltotal:F2}");
-                                Checkout = false;
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Insufficient payment");
-                                continue;
-                            }
-                        }
-
-                        break;
-
-                    default:
-                        Console.WriteLine("Invalid choice");
-                        break;
-                }
-            }
-
-
-
-
-            //Display Receipt
-            Console.WriteLine("------------------------");
-            Console.WriteLine("|         Receipt       |");
-            Console.WriteLine("------------------------");
-            Console.WriteLine($"Grand total:{grand_total} php");
-            Console.WriteLine($"Discount: {discount} php");
-            Console.WriteLine($"Final Total: {finaltotal} php");
-            Console.WriteLine("------------------------");
-
-            //Updated Data
-            while (true)
-            {
-                Console.Write("Would you like to see the updated data(Y/N): ");
-                answer = Console.ReadLine().ToUpper();
-
-                if (answer == "Y")
-                {
-                    Console.WriteLine("------------------------");
-                    Console.WriteLine("|     Updated Stock     |");
-                    Console.WriteLine("------------------------");
-                    foreach (Product u in products)
-                    {
-                        u.DisplayProduct();
-                    }
-                    Console.WriteLine("------------------------");
-                }
-                else if (answer == "N")
-                {
-                    Console.WriteLine("Thank you for Using the System");
-                    break;
-                }
-
-                break;
-            }
-
 
 
             Console.ReadKey();
