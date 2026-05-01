@@ -10,7 +10,7 @@ namespace Program
         public String Name;
         public double price;
         public int RemainingStock;
-        public String Category;
+        public string Category { get; set; } = "";
 
         public void DisplayProduct()
         {

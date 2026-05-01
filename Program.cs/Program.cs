@@ -12,16 +12,24 @@ namespace Program
 
         static void Main(string[] args)
         {
+            Category fruit = new Category { ID = 1, Name = "Fruits" };
+            Category vegetable = new Category { ID = 2, Name = "Vegetables" };
+            Category tools = new Category { ID = 3, Name = "Tools" };
 
 
             //Store Display Menu
-            Product[] products = new Product[5];
+            Product[] products = new Product[10];
 
-            products[0] = new Product { ID = 1, Name = "Apple", price = 10, RemainingStock = 15, Category = "Fruit" };
-            products[1] = new Product { ID = 2, Name = "Banana", price = 12, RemainingStock = 10, Category = "Fruit" };
-            products[2] = new Product { ID = 3, Name = "Orange", price = 13.25, RemainingStock = 12, Category = "Fruit" };
-            products[3] = new Product { ID = 4, Name = "Onions", price = 7, RemainingStock = 15, Category = "Vegtable" };
+            products[0] = new Product { ID = 1, Name = "Apple", price = 10, RemainingStock = 15, Category = "Fruits" };
+            products[1] = new Product { ID = 2, Name = "Banana", price = 12, RemainingStock = 10, Category = "Fruits" };
+            products[2] = new Product { ID = 3, Name = "Orange", price = 13.25, RemainingStock = 12, Category = "Fruits" };
+            products[3] = new Product { ID = 4, Name = "Onions", price = 7, RemainingStock = 15, Category = "Vegetables" };
             products[4] = new Product { ID = 5, Name = "Golden Shovel", price = 5000, RemainingStock = 10, Category = "Tools" };
+            products[5] = new Product { ID = 6, Name = "Trowel", price = 300, RemainingStock = 20, Category = "Tools" };
+            products[6] = new Product { ID = 7, Name = "Shovel", price = 500, RemainingStock = 15, Category = "Tools" };
+            products[7] = new Product { ID = 8, Name = "Cabbage", price = 100, RemainingStock = 30, Category = "Vegetables" };
+            products[8] = new Product { ID = 9, Name = "Carrots", price = 90, RemainingStock = 30, Category = "Vegetables" };
+            products[9] = new Product { ID = 10, Name = "Tomatoes", price = 50, RemainingStock = 30, Category = "Vegetables" };
 
 
 
@@ -29,6 +37,11 @@ namespace Program
             Product[] cart = new Product[3];
             int[] cart_quantity = new int[3];
             int cart_count = 0;
+
+            //Order History
+            Order[] history = new Order[10];
+            int historyCount = 0;
+            int receiptCounter = 1;
 
             String answer;
             bool outer = true;
@@ -38,6 +51,8 @@ namespace Program
             double payment;
             bool Checkout = true;
             bool lowStock = false;
+            String exit;
+
 
             do
             {
@@ -159,6 +174,9 @@ namespace Program
                     Console.WriteLine("4. Update item quantity");
                     Console.WriteLine("5. Clear Cart");
                     Console.WriteLine("6. Checkout");
+                    Console.WriteLine("7. View Order History");
+                    Console.WriteLine("8. Product Search");
+                    Console.WriteLine("9. Exit");
 
                     Console.Write("\nEnter Your choice: ");
                     choice2 = Convert.ToInt32(Console.ReadLine());
@@ -305,7 +323,7 @@ namespace Program
 
                             while (true)
                             {
-
+                                //validate the payment input
                                 Console.Write("Enter payment: php ");
                                 if (!double.TryParse(Console.ReadLine(), out payment) || payment <= -1)
                                 {
@@ -318,6 +336,47 @@ namespace Program
                                     Console.WriteLine($"\nFinal Total: php{finaltotal}");
                                     Console.WriteLine($"Payment: php{payment}");
                                     Console.WriteLine($"Change: php{payment - finaltotal:F2}");
+
+                                    string receiptNo = receiptCounter.ToString("D4");
+                                    DateTime now = DateTime.Now;
+                                    double change = payment - finaltotal;
+
+                                    Console.WriteLine("\n------------------------");
+                                    Console.WriteLine("|        RECEIPT       |");
+                                    Console.WriteLine("------------------------");
+                                    Console.WriteLine($"Receipt No: {receiptNo}");
+                                    Console.WriteLine($"Date: {now}");
+                                    Console.WriteLine("------------------------");
+
+                                    for (int i = 0; i < cart_count; i++)
+                                    {
+                                        Console.WriteLine($"{cart[i].Name} x{cart_quantity[i]}");
+                                    }
+
+                                    Console.WriteLine("------------------------");
+                                    Console.WriteLine($"Grand Total: PHP {grand_total:F2}");
+                                    Console.WriteLine($"Discount: PHP {discount:F2}");
+                                    Console.WriteLine($"Final Total: PHP {finaltotal:F2}");
+                                    Console.WriteLine($"Payment: PHP {payment:F2}");
+                                    Console.WriteLine($"Change: PHP {change:F2}");
+                                    Console.WriteLine("------------------------");
+
+                                    history[historyCount] = new Order
+                                    {
+                                        ReceiptNo = receiptNo,
+                                        Date = now,
+                                        FinalTotal = finaltotal,
+                                        Payment = payment,
+                                        Change = change
+                                    };
+
+                                    historyCount++;
+                                    receiptCounter++;
+
+                                    grand_total = 0;
+                                    discount = 0;
+
+                                    cart_count = 0;
 
                                     foreach (Product p in products)
                                     {
@@ -340,8 +399,8 @@ namespace Program
                                             }
                                         }
                                     }
-                                    break;
 
+                                    break;
                                 }
                                 else
                                 {
@@ -353,8 +412,87 @@ namespace Program
 
                             break;
 
+                        case 7:
+
+                            if (historyCount == 0)
+                            {
+                                Console.WriteLine("No orders yet.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n------------------------");
+                            Console.WriteLine("|    ORDER HISTORY     |");
+                            Console.WriteLine("------------------------");
+
+                            for (int i = 0; i < historyCount; i++)
+                            {
+                                Console.WriteLine($"Receipt #{history[i].ReceiptNo}");
+                                Console.WriteLine($"Date: {history[i].Date}");
+                                Console.WriteLine($"Final Total: PHP {history[i].FinalTotal:F2}");
+                                Console.WriteLine("------------------------");
+                            }
+
+                            break;
+
+                        case 8:
+                            Console.WriteLine("Categories:");
+                            Console.WriteLine("- Fruits");
+                            Console.WriteLine("- Vegetables");
+                            Console.WriteLine("- Tools:");
+                            Console.Write("Enter category to search: ");
+                            string searchCategory = Console.ReadLine().ToUpper() ?? "";
+
+                            bool foundItem = false;
+
+                            Console.WriteLine("\nProducts found:");
+
+                            foreach (Product p in products)
+                            {
+                                // compare category
+                                if (p.Category.ToLower() == searchCategory.ToLower())
+                                {
+                                    Console.WriteLine($"{p.Name} - x{p.RemainingStock} Stock left");
+                                    foundItem = true;
+                                }
+                            }
+
+                            if (!foundItem)
+                            {
+                                Console.WriteLine("No products found in that category.");
+                            }
+
+                            break;
+
+                        case 9:
+                            while (true)
+                            {
+                                Console.Write("\nDo you really want to exit Y/N? ");
+                                exit = Console.ReadLine().ToUpper();
+
+                                if (exit == "Y")
+                                {
+                                    Console.WriteLine("Thank you for Using The Shopping System!!");
+                                    outer = false;
+                                    Checkout = false;
+                                    break;
+                                }
+                                else if (exit == "N")
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid Input");
+                                    continue;
+                                }
+                            }
+                            break;
+
                         default:
-                            Console.WriteLine("Invalid choice");
+                            if (!int.TryParse(Console.ReadLine(), out choice2))
+                            {
+                                Console.WriteLine("Invalid choice");
+                            }
                             break;
                     }
                 }
@@ -366,4 +504,18 @@ namespace Program
         }
     }
 
+    class Order
+    {
+        public string ReceiptNo;
+        public DateTime Date;
+        public double FinalTotal;
+        public double Payment;
+        public double Change;
+    }
+
+    class Category
+    {
+        public int ID;
+        public string Name;
+    }
 }
