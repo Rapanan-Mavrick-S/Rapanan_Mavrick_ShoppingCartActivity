@@ -181,7 +181,18 @@ namespace Program
                     Console.WriteLine("9. Exit");
 
                     Console.Write("\nEnter Your choice: ");
-                    choice2 = Convert.ToInt32(Console.ReadLine());
+
+                    if (!int.TryParse(Console.ReadLine(), out choice2))
+                    {
+                        Console.WriteLine("Invalid input! Please enter a number.");
+                        continue;
+                    }
+
+                    if (choice2 < 1 || choice2 > 9)
+                    {
+                        Console.WriteLine("Please enter a number from 1-9.");
+                        continue;
+                    }
 
                     switch (choice2)
                     {
@@ -532,10 +543,7 @@ namespace Program
                             break;
 
                         default:
-                            if (!int.TryParse(Console.ReadLine(), out choice2))
-                            {
-                                Console.WriteLine("Invalid choice");
-                            }
+                            Console.WriteLine("Invalid choice.");
                             break;
                     }
                 }
@@ -547,18 +555,5 @@ namespace Program
         }
     }
 
-    class Order
-    {
-        public string ReceiptNo;
-        public DateTime Date;
-        public double FinalTotal;
-        public double Payment;
-        public double Change;
-    }
 
-    class Category
-    {
-        public int ID;
-        public string Name;
-    }
 }
