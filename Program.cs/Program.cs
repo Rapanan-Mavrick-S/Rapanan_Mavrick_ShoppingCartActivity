@@ -20,16 +20,16 @@ namespace Program
             //Store Display Menu
             Product[] products = new Product[10];
 
-            products[0] = new Product { ID = 1, Name = "Apple", price = 10, RemainingStock = 15, Category = "Fruits" };
-            products[1] = new Product { ID = 2, Name = "Banana", price = 12, RemainingStock = 10, Category = "Fruits" };
-            products[2] = new Product { ID = 3, Name = "Orange", price = 13.25, RemainingStock = 12, Category = "Fruits" };
-            products[3] = new Product { ID = 4, Name = "Onions", price = 7, RemainingStock = 15, Category = "Vegetables" };
-            products[4] = new Product { ID = 5, Name = "Golden Shovel", price = 5000, RemainingStock = 10, Category = "Tools" };
-            products[5] = new Product { ID = 6, Name = "Trowel", price = 300, RemainingStock = 20, Category = "Tools" };
-            products[6] = new Product { ID = 7, Name = "Shovel", price = 500, RemainingStock = 15, Category = "Tools" };
-            products[7] = new Product { ID = 8, Name = "Cabbage", price = 100, RemainingStock = 30, Category = "Vegetables" };
-            products[8] = new Product { ID = 9, Name = "Carrots", price = 90, RemainingStock = 30, Category = "Vegetables" };
-            products[9] = new Product { ID = 10, Name = "Tomatoes", price = 50, RemainingStock = 30, Category = "Vegetables" };
+            products[0] = new Product { ID = 1, Name = "Apple", Price = 10, RemainingStock = 15, Category = "Fruits" };
+            products[1] = new Product { ID = 2, Name = "Banana", Price = 12, RemainingStock = 10, Category = "Fruits" };
+            products[2] = new Product { ID = 3, Name = "Orange", Price = 13.25, RemainingStock = 12, Category = "Fruits" };
+            products[3] = new Product { ID = 4, Name = "Onions", Price = 7, RemainingStock = 15, Category = "Vegetables" };
+            products[4] = new Product { ID = 5, Name = "Golden Shovel", Price = 5000, RemainingStock = 10, Category = "Tools" };
+            products[5] = new Product { ID = 6, Name = "Trowel", Price = 300, RemainingStock = 20, Category = "Tools" };
+            products[6] = new Product { ID = 7, Name = "Shovel", Price = 500, RemainingStock = 15, Category = "Tools" };
+            products[7] = new Product { ID = 8, Name = "Cabbage", Price = 100, RemainingStock = 30, Category = "Vegetables" };
+            products[8] = new Product { ID = 9, Name = "Carrots", Price = 90, RemainingStock = 30, Category = "Vegetables" };
+            products[9] = new Product { ID = 10, Name = "Tomatoes", Price = 50, RemainingStock = 30, Category = "Vegetables" };
 
 
 
@@ -127,7 +127,6 @@ namespace Program
                     {
                         Console.WriteLine("Cart is Full");
                         goto cartfull;
-                        break;
                     }
 
                     cart[cart_count] = selected;
@@ -181,7 +180,18 @@ namespace Program
                     Console.WriteLine("9. Exit");
 
                     Console.Write("\nEnter Your choice: ");
-                    choice2 = Convert.ToInt32(Console.ReadLine());
+
+                    if (!int.TryParse(Console.ReadLine(), out choice2))
+                    {
+                        Console.WriteLine("Invalid input! Please enter a number.");
+                        continue;
+                    }
+
+                    if (choice2 < 1 || choice2 > 9)
+                    {
+                        Console.WriteLine("Please enter a number from 1-9.");
+                        continue;
+                    }
 
                     switch (choice2)
                     {
@@ -532,10 +542,7 @@ namespace Program
                             break;
 
                         default:
-                            if (!int.TryParse(Console.ReadLine(), out choice2))
-                            {
-                                Console.WriteLine("Invalid choice");
-                            }
+                            Console.WriteLine("Invalid choice.");
                             break;
                     }
                 }
@@ -547,18 +554,5 @@ namespace Program
         }
     }
 
-    class Order
-    {
-        public string ReceiptNo;
-        public DateTime Date;
-        public double FinalTotal;
-        public double Payment;
-        public double Change;
-    }
 
-    class Category
-    {
-        public int ID;
-        public string Name;
-    }
 }
