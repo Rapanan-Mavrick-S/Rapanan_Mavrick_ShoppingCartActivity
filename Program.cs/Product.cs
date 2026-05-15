@@ -6,11 +6,53 @@ namespace Program
 {
     class Product
     {
-        public int ID;
-        public String Name;
-        public double price;
-        public int RemainingStock;
-        public string Category { get; set; } = "";
+        private int id;
+        private string name = "";
+        private double price;
+        private int remainingStock;
+        private string category = "";
+
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public double Price
+        {
+            get { return price; }
+            set
+            {
+                if (value >= 0)
+                {
+                    price = value;
+                }
+            }
+        }
+
+        public int RemainingStock
+        {
+            get { return remainingStock; }
+            set
+            {
+                if (value >= 0)
+                {
+                    remainingStock = value;
+                }
+            }
+        }
+
+        public string Category
+        {
+            get { return category; }
+            set { category = value; }
+        }
 
         public void DisplayProduct()
         {

@@ -6,8 +6,20 @@ namespace Program
 {
     class Category
     {
-        public int ID;
-        public string Name;
+        private int id;
+        private string name = "";
+
+        public int ID
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
     }
 }
 
